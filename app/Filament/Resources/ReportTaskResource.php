@@ -56,6 +56,8 @@ class ReportTaskResource extends Resource
             })
             ->recordUrl(null)
             ->columns([
+                Tables\Columns\TextColumn::make('No')
+                    ->rowIndex(),
                 Tables\Columns\TextColumn::make('due_date')
                     ->date()
                     ->sortable()
@@ -75,16 +77,29 @@ class ReportTaskResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->label('Nama Sales'),
-                Tables\Columns\IconColumn::make('is_completed')
+                /*Tables\Columns\IconColumn::make('is_completed')
                     ->searchable()
                     ->sortable()
                     ->boolean()
-                    ->label('Status'),
+                    ->label('Status'),*/
+                Tables\Columns\TextColumn::make('is_completed')
+                    ->label('Status')
+                    ->formatStateUsing(function ($record) {
+                        //$tagsList = view('customer.tagsList', ['tags' => $record->customer->tags])->render();
+                        if($record->is_completed == true){
+                            $text = 'Complete';
+                        }else{
+                            $text = 'Incomplete';
+                        }
+                        return '' . $text;
+                    })
+                    ->html(),
                 Tables\Columns\TextColumn::make('project.customer.tags.name')
                     ->searchable()
                     ->sortable()
                     ->label('Tag'),
             ])
+            ->defaultSort('due_date', 'desc')
             ->filters([
                 Tables\Filters\SelectFilter::make('due_date')
                             ->form([

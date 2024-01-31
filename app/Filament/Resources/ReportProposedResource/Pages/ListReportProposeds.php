@@ -14,7 +14,7 @@ class ListReportProposeds extends ListRecords
     {
         $qr_string = urldecode(request()->getQueryString());
         return [
-            Actions\Action::make('export')
+            Actions\Action::make('download')
                 ->url(url('/export-report-proposed?'.$qr_string)),
         ];
     }

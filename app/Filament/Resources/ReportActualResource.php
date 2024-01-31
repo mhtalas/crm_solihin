@@ -7,6 +7,7 @@ use App\Filament\Resources\ReportActualResource\RelationManagers;
 use App\Models\ProjectActual;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Components\DatePicker;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -38,17 +39,17 @@ class ReportActualResource extends Resource
         return $table
             ->recordUrl(null)
             ->columns([
+                Tables\Columns\TextColumn::make('No')
+                    ->rowIndex(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->date()
-                    ->sortable()
+                    ->sortable(['project_actuals.created_at'])
                     ->label('Hari/Tanggal'),
                 Tables\Columns\TextColumn::make('product.name')
                     ->searchable()
                     ->sortable()
                     ->label('Product'),
                 Tables\Columns\TextColumn::make('product.items.name')
-                    ->searchable()
-                    ->sortable()
                     ->label('Product Item'),
                 Tables\Columns\TextColumn::make('project.customer.customer_name')
                     ->searchable()
@@ -68,7 +69,7 @@ class ReportActualResource extends Resource
                     })*/
                     ->numeric()
                     ->sortable()
-                    ->label('Harga'),
+                    ->label('Total Harga'),
                 Tables\Columns\TextColumn::make('project.pipelineStageLogs_proposed.notes')
                     ->searchable()
                     ->sortable()
@@ -78,8 +79,32 @@ class ReportActualResource extends Resource
                     ->sortable()
                     ->label('Nama Sales'),
             ])
+            ->defaultSort('project_actuals.created_at', 'desc')
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('start_date')
+                    ->form([
+                        DatePicker::make('tanggal_awal')
+                            ->default(now()->subMonths(1)),
+                        DatePicker::make('tanggal_akhir')
+                            ->default(now()),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['tanggal_awal'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('project_actuals.created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['tanggal_akhir'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('project_actuals.created_at', '<=', $date),
+                            );
+                    }),
+                Tables\Filters\SelectFilter::make('name')
+                    ->relationship('project.employee', 'name')
+                    ->label('Sales'),
+                Tables\Filters\SelectFilter::make('customer_name')
+                    ->relationship('project.customer', 'customer_name')
+                    ->label('Company / Clinic'),
             ])
             ->actions([
                 //Tables\Actions\EditAction::make(),

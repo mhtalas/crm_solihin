@@ -44,6 +44,8 @@ class ReportVisitResource extends Resource
                 false))*/
             ->recordUrl(null)
             ->columns([
+                Tables\Columns\TextColumn::make('No')
+                    ->rowIndex(),
                 Tables\Columns\TextColumn::make('start_date')
                     ->date()
                     ->sortable()
@@ -72,6 +74,7 @@ class ReportVisitResource extends Resource
                     })
                     ->html(),
             ])
+            ->defaultSort('start_date', 'desc')
             ->filters([
                 Tables\Filters\SelectFilter::make('start_date')
                             ->form([

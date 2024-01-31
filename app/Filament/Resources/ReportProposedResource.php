@@ -39,6 +39,8 @@ class ReportProposedResource extends Resource
         return $table
             ->recordUrl(null)
             ->columns([
+                Tables\Columns\TextColumn::make('No')
+                    ->rowIndex(),
                 Tables\Columns\TextColumn::make('quote.created_at')
                     ->date()
                     ->sortable()
@@ -48,8 +50,6 @@ class ReportProposedResource extends Resource
                     ->sortable()
                     ->label('Product'),
                 Tables\Columns\TextColumn::make('product.items.name')
-                    ->searchable()
-                    ->sortable()
                     ->label('Product Item'),
                 Tables\Columns\TextColumn::make('quote.project.customer.customer_name')
                     ->searchable()
@@ -68,22 +68,35 @@ class ReportProposedResource extends Resource
                         return $record->quantity * $record->price;
                     })
                     ->numeric()
-                    ->sortable()
-                    ->label('Harga'),
+                    //->sortable()
+                    ->label('Total Harga'),
                 Tables\Columns\TextColumn::make('quote.project.pipelineStageLogs_proposed.notes')
                     ->searchable()
                     ->sortable()
                     ->label('Notes'),
-                Tables\Columns\IconColumn::make('quote.is_complete')
+                /*Tables\Columns\IconColumn::make('quote.is_complete')
                     ->searchable()
                     ->sortable()
                     ->boolean()
-                    ->label('Status'),
+                    ->label('Status Logo'),*/
+                Tables\Columns\TextColumn::make('quote.is_complete')
+                    ->label('Status')
+                    ->formatStateUsing(function ($record) {
+                        //$tagsList = view('customer.tagsList', ['tags' => $record->customer->tags])->render();
+                        if($record->is_complete == true){
+                            $text = 'Complete';
+                        }else{
+                            $text = 'Incomplete';
+                        }
+                        return '' . $text;
+                    })
+                    ->html(),
                 Tables\Columns\TextColumn::make('quote.project.employee.name')
                     ->searchable()
                     ->sortable()
                     ->label('Nama Sales'),
             ])
+            ->defaultSort('quote.created_at', 'desc')
             ->filters([
                 Tables\Filters\SelectFilter::make('start_date')
                     ->form([
@@ -143,4 +156,5 @@ class ReportProposedResource extends Resource
                         ->join('projects','projects.id','=','quotes.project_id')
                         ->where('projects.pipeline_stage_id', 3);
     }
+
 }

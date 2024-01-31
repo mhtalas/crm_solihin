@@ -18,7 +18,7 @@ class ListReportTasks extends ListRecords
 
         $qr_string = urldecode(request()->getQueryString());
         return [
-            Actions\Action::make('export')
+            Actions\Action::make('download')
                 ->url(url('/export-report-task?'.$qr_string)),
         ];
 
