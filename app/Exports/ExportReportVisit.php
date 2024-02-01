@@ -8,10 +8,10 @@ use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 #use Maatwebsite\Excel\Concerns\WithColumnFormatting;
-#use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithMapping;
 use DB;
 
-class ExportReportVisit implements FromCollection, WithHeadings #, WithMapping, WithColumnFormatting
+class ExportReportVisit implements FromCollection, WithHeadings, WithMapping #, WithColumnFormatting
 {
     protected $customer_id;
     protected $date_filter_awal;
@@ -45,7 +45,7 @@ class ExportReportVisit implements FromCollection, WithHeadings #, WithMapping, 
                     ->leftJoin('customer_tag','customer_tag.customer_id','=','customers.id')
                     ->leftJoin('tags','tags.id','=','customer_tag.tag_id')
                     ->join('users','users.id','=','projects.employee_id')
-                    ->join(DB::raw("(SELECT 
+                    ->leftJoin(DB::raw("(SELECT 
                                 project_id, STRING_AGG(notes, ', ') AS con_notes
                             FROM project_pipeline_stages
                             WHERE pipeline_stage_id = 2
@@ -77,14 +77,16 @@ class ExportReportVisit implements FromCollection, WithHeadings #, WithMapping, 
     
     public function headings():array
     {
-        return ['Tanggal','Company/Clinic','PIC Client', 'Result Visit','Nama Sales', 'Tag'];
+        return ['No','Tanggal','Company/Clinic','PIC Client', 'Result Visit','Nama Sales', 'Tag'];
     }
-
-    /*
+    
     public function map($visitreport): array
     {
+        static $number = 1;
         return [
-            Date::dateTimeToExcel($visitreport->start_date),
+            $number++,
+            #Date::dateTimeToExcel($visitreport->start_date),
+            $visitreport->start_date,
             $visitreport->customer_name,
             $visitreport->pic_name,
             $visitreport->con_notes,
@@ -93,6 +95,7 @@ class ExportReportVisit implements FromCollection, WithHeadings #, WithMapping, 
         ];
     }
 
+    /*
     public function columnFormats(): array
     {
         return [

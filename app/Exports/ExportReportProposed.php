@@ -11,7 +11,7 @@ use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use DB;
 
-class ExportReportProposed implements FromCollection, WithHeadings #, WithMapping, WithColumnFormatting
+class ExportReportProposed implements FromCollection, WithHeadings, WithMapping #, WithColumnFormatting
 {
     protected $customer_id;
     protected $date_filter_awal;
@@ -64,7 +64,7 @@ class ExportReportProposed implements FromCollection, WithHeadings #, WithMappin
             ->leftJoin('customer_tag','customer_tag.customer_id','=','customers.id')
             ->leftJoin('tags','tags.id','=','customer_tag.tag_id')
             ->join('users','users.id','=','projects.employee_id')
-            ->join(DB::raw("(SELECT 
+            ->leftJoin(DB::raw("(SELECT 
                         project_id, STRING_AGG(notes, ', ') AS con_notes
                     FROM project_pipeline_stages
                     WHERE pipeline_stage_id = 3
@@ -97,16 +97,18 @@ class ExportReportProposed implements FromCollection, WithHeadings #, WithMappin
 
     public function headings():array
     {
-        return ['Tanggal','Product','Product Item', 'Company / Clinic','Pax', 'Harga', 'Total Harga', 'Notes', 'Status', 'Nama Sales'];
+        return ['No','Tanggal','Product','Product Item', 'Company / Clinic','Pax', 'Harga', 'Total Harga', 'Notes', 'Status', 'Nama Sales'];
     }
 
-    /*
+    
     public function map($data): array
     {
+        static $number = 1;
         return [
-            Date::dateTimeToExcel($data->created_at),
+            $number++,
+            $data->created_at,
             $data->product_name,
-            $data->product_item_name,
+            $data->con_piname,
             $data->customer_name,
             $data->quantity,
             $data->price,
@@ -117,6 +119,7 @@ class ExportReportProposed implements FromCollection, WithHeadings #, WithMappin
         ];
     }
 
+    /*
     public function columnFormats(): array
     {
         return [

@@ -27,7 +27,7 @@ class ReportTaskResource extends Resource
 
     public static ?string $label = 'Report Task';
 
-
+    protected static ?int $navigationSort = 1;
 
     
 

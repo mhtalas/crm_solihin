@@ -71,12 +71,14 @@ class ExportReportTask implements FromCollection, WithHeadings, WithMapping, Wit
 
     public function headings():array
     {
-        return ['Due Date','Company/Clinic','PIC Client', 'Deskripsi','Nama Sales', 'Status', 'Tag'];
+        return ['No','Due Date','Company/Clinic','PIC Client', 'Deskripsi','Nama Sales', 'Status', 'Tag'];
     }
 
     public function map($taskreport): array
     {
+        static $number = 1;
         return [
+            $number++,
             Date::dateTimeToExcel($taskreport->due_date),
             $taskreport->customer_name,
             $taskreport->pic_name,
@@ -90,7 +92,7 @@ class ExportReportTask implements FromCollection, WithHeadings, WithMapping, Wit
     public function columnFormats(): array
     {
         return [
-            'A' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+            'B' => NumberFormat::FORMAT_DATE_DDMMYYYY,
         ];
     }
 

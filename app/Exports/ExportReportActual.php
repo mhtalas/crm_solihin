@@ -8,10 +8,10 @@ use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 #use Maatwebsite\Excel\Concerns\WithColumnFormatting;
-#use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithMapping;
 use DB;
 
-class ExportReportActual implements FromCollection, WithHeadings
+class ExportReportActual implements FromCollection, WithHeadings, WithMapping
 {
     /* *
     * @return \Illuminate\Support\Collection
@@ -52,7 +52,7 @@ class ExportReportActual implements FromCollection, WithHeadings
             ->leftJoin('customer_tag','customer_tag.customer_id','=','customers.id')
             ->leftJoin('tags','tags.id','=','customer_tag.tag_id')
             ->join('users','users.id','=','projects.employee_id')
-            ->join(DB::raw("(SELECT 
+            ->leftJoin(DB::raw("(SELECT 
                         project_id, STRING_AGG(notes, ', ') AS con_notes
                     FROM project_pipeline_stages
                     WHERE pipeline_stage_id = 6
@@ -68,6 +68,23 @@ class ExportReportActual implements FromCollection, WithHeadings
 
     public function headings():array
     {
-        return ['Tanggal','Product','Product Item', 'Company / Clinic','Pax Actual', 'Harga', 'Total Harga', 'Notes', 'Nama Sales'];
+        return ['No','Tanggal','Product','Product Item', 'Company / Clinic','Pax Actual', 'Harga', 'Total Harga', 'Notes', 'Nama Sales'];
+    }
+
+    public function map($data): array
+    {
+        static $number = 1;
+        return [
+            $number++,
+            $data->created_at,
+            $data->product_name,
+            $data->con_piname,
+            $data->customer_name,
+            $data->quantity_actual,
+            $data->price,
+            $data->actual_final,
+            $data->con_notes,
+            $data->sales_name,
+        ];
     }
 }
