@@ -106,7 +106,7 @@ class ExportReportProposed implements FromCollection, WithHeadings, WithMapping 
         static $number = 1;
         return [
             $number++,
-            $data->created_at,
+            substr($data->created_at,0,10),
             $data->product_name,
             $data->con_piname,
             $data->customer_name,

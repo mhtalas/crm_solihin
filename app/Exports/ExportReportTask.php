@@ -79,7 +79,8 @@ class ExportReportTask implements FromCollection, WithHeadings, WithMapping, Wit
         static $number = 1;
         return [
             $number++,
-            Date::dateTimeToExcel($taskreport->due_date),
+            #Date::dateTimeToExcel($taskreport->due_date),
+            substr($taskreport->due_date,0,10),
             $taskreport->customer_name,
             $taskreport->pic_name,
             $taskreport->description,
