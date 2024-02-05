@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\ReportProposedResource\Pages;
 use App\Filament\Resources\ReportProposedResource\RelationManagers;
 use App\Models\ProductQuote;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Form;
@@ -28,6 +29,18 @@ class ReportProposedResource extends Resource
 
     protected static ?int $navigationSort = 3;
 
+    public static function canViewAny(): bool
+    {
+        #return auth()->user()->name == 'Admin' ? true : false;
+        #Post::find($id);
+        $userlogin = User::find(auth()->user()->id);
+        #$userauth = new User;
+       # return $userauth->hasAnyPermission(['Report Visit List']);
+
+       #return $userlogin->name == 'Admin';
+       return $userlogin->hasAnyPermission(['Report Propossed List']) || $userlogin->is_admin;
+    }
+    
     public static function form(Form $form): Form
     {
         return $form

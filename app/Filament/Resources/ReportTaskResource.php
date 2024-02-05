@@ -4,7 +4,9 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ReportTaskResource\Pages;
 use App\Filament\Resources\ReportTaskResource\RelationManagers;
+use App\Models\ReportTask;
 use App\Models\Task;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Form;
@@ -25,11 +27,24 @@ class ReportTaskResource extends Resource
 
     protected static ?string $navigationGroup = 'Reports';
 
+    protected static ?string $modelLabel = 'ReportTask';
+
     public static ?string $label = 'Report Task';
 
     protected static ?int $navigationSort = 1;
 
-    
+
+    public static function canViewAny(): bool
+    {
+        #return auth()->user()->name == 'Admin' ? true : false;
+        #Post::find($id);
+        $userlogin = User::find(auth()->user()->id);
+        #$userauth = new User;
+       # return $userauth->hasAnyPermission(['Report Visit List']);
+
+       #return $userlogin->name == 'Admin';
+       return $userlogin->hasAnyPermission(['Report Task List']) || $userlogin->is_admin;
+    }
 
     public static function form(Form $form): Form
     {

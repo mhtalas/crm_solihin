@@ -6,6 +6,7 @@ use App\Filament\Resources\ReportVisitResource\Pages;
 use App\Filament\Resources\ReportVisitResource\RelationManagers;
 use App\Models\Task;
 use App\Models\Project;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Form;
@@ -30,6 +31,20 @@ class ReportVisitResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
+    protected static bool $shouldRegisterNavigation = true;
+
+
+    public static function canViewAny(): bool
+    {
+        #return auth()->user()->name == 'Admin' ? true : false;
+        #Post::find($id);
+        $userlogin = User::find(auth()->user()->id);
+        #$userauth = new User;
+       # return $userauth->hasAnyPermission(['Report Visit List']);
+
+       #return $userlogin->name == 'Admin';
+       return $userlogin->hasAnyPermission(['Report Visit List']) || $userlogin->is_admin;
+    }
 
     public static function form(Form $form): Form
     {
